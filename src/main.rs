@@ -1,19 +1,13 @@
-use axum::{extract::Path, Router, routing::get};
+use axum::{http::StatusCode, routing::get, Router};
 
-async fn greet(path: Option<Path<String>>) -> String {
-    let name = match path {
-        Some(Path(name)) => name,
-        None => "World".to_string(),
-    };
-
-    format!("Hello {}!", name)
+async fn health_check() -> StatusCode {
+    StatusCode::OK
 }
 
 #[tokio::main]
 async fn main() {
     let app = Router::new()
-        .route("/", get(greet))
-        .route("/:name", get(greet));
+        .route("/", get(health_check));
 
     axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
         .serve(app.into_make_service())
