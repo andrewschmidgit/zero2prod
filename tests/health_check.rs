@@ -1,7 +1,7 @@
-use std::net::TcpListener;
-
+use axum::ServiceExt;
 use reqwest::StatusCode;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
+use tokio::net::TcpListener;
 use uuid::Uuid;
 use zero2prod::configuration::{get_configuration, DatabaseSettings};
 
@@ -12,7 +12,7 @@ pub struct TestApp {
 
 #[allow(clippy::let_underscore_future)]
 async fn spawn_app() -> TestApp {
-    let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
+    let listener = TcpListener::bind("127.0.0.1:0").await.expect("Failed to bind random port");
     let port = listener.local_addr().unwrap().port();
     let address = format!("http://127.0.0.1:{}", port);
 
@@ -21,11 +21,10 @@ async fn spawn_app() -> TestApp {
     let connection_pool = configure_database(&configuration.database).await;
 
     let app = zero2prod::app::app(connection_pool.clone());
-    let s = axum::Server::from_tcp(listener)
-        .unwrap()
-        .serve(app.into_make_service());
 
-    let _ = tokio::spawn(s);
+    let _ = tokio::spawn(async {
+        axum::serve(listener, app.into_make_service()).await.unwrap();
+    });
     TestApp {
         address,
         db_pool: connection_pool,
