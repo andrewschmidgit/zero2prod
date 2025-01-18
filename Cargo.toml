@@ -21,16 +21,15 @@ secrecy = { version = "0.10.3", features = ["serde"] }
 tower = "0.5.2"
 
 [dependencies.sqlx]
-version = "0.7"
+version = "0.8.3"
 default-features = false
 features = [
-	"runtime-tokio",
-	"tls-rustls",
+	"runtime-tokio-rustls",
 	"macros",
 	"postgres",
 	"uuid",
 	"time",
-	"migrate"
+	"migrate",
 ]
 
 [dev-dependencies]
