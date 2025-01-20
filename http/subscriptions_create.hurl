@@ -1,4 +1,4 @@
-POST http://localhost:8000/subscriptions
+POST {{host}}/subscriptions
 [FormParams]
 name: John Doe
 email: john@doe.com

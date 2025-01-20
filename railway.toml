@@ -1,0 +1,5 @@
+[build]
+
+[deploy]
+healthcheckPath = "/health_check"
+restartPolicyType = "NEVER"
